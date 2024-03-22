@@ -62,12 +62,12 @@ public class ChapterServiceImpl implements ChapterService{
                 ImageInfo imageInfo = new ImageInfo(url, imgName);
                 imageInfoList.add(imageInfo);
             }
-            Collections.sort(imageInfoList, new Comparator<ImageInfo>() {
-                @Override
-                public int compare(ImageInfo imageInfo1, ImageInfo imageInfo2) {
-                    return imageInfo1.getImgName().compareTo(imageInfo2.getImgName());
-                }
-            });
+            // Collections.sort(imageInfoList, new Comparator<ImageInfo>() {
+            //     @Override
+            //     public int compare(ImageInfo imageInfo1, ImageInfo imageInfo2) {
+            //         return imageInfo1.getImgName().compareTo(imageInfo2.getImgName());
+            //     }
+            // });
             chapter.setImageInfo(imageInfoList);
         }catch(Exception ex){
             chapter.setImageInfo(null);

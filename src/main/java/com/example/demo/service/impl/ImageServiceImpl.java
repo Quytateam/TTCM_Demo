@@ -12,6 +12,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.api.ApiResponse;
+// import com.cloudinary.Transformation;
 // import com.cloudinary.Transformation;
 // import com.cloudinary.api.ApiResponse;
 import com.cloudinary.utils.ObjectUtils;
@@ -63,7 +65,7 @@ public class ImageServiceImpl implements ImageService{
     // }
 
     @Override
-    public Map upload(MultipartFile file, String comicName, String chapName)  {
+    public Map<String, Object> upload(MultipartFile file, String comicName, String chapName)  {
         try{
             ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
             HttpSession session = attr.getRequest().getSession(true);
@@ -71,11 +73,11 @@ public class ImageServiceImpl implements ImageService{
 
             String fileName = chapName.isEmpty() ? comicName.toLowerCase() + "-avata" : comicName.toLowerCase() + "-" + chapName.toLowerCase() + "-" + counter;
             String publicId = chapName.isEmpty() ? comicName.toLowerCase() +"/" + fileName: comicName.toLowerCase() + "/" + chapName.toLowerCase() + "/" + fileName;
-            Map params = ObjectUtils.asMap(
+            Map<String, Object> params = ObjectUtils.asMap(
                 "public_id", publicId
             );
             // Map data = this.cloudinary.uploader().upload(file.getBytes(), Map.of());
-            Map data = this.cloudinary.uploader().upload(file.getBytes(), params);
+            Map<String, Object> data = this.cloudinary.uploader().upload(file.getBytes(), params);
             session.setAttribute("counter", counter + 1);
             return data;
         }catch (IOException io){
@@ -83,19 +85,44 @@ public class ImageServiceImpl implements ImageService{
         }
     }
 
-    public Map<String, Object> getFile(String comicName, String chapName) {
+    public ApiResponse getFile(String comicName, String chapName) {
         try{
-            // String folderPath1 =  comicName+"/" + chapName;
-            String folderPath = chapName.isEmpty() ? comicName.toLowerCase() : comicName.toLowerCase() + "/" + chapName.toLowerCase();
+            // String publicId1 =  comicName+"/" + chapName;
+            String publicId = chapName.isEmpty() ? comicName.toLowerCase() : comicName.toLowerCase() + "/" + chapName.toLowerCase();
             // Retrieve all files in the specified folder
-            Map<String, Object> result = cloudinary.search()
-            .expression("folder:" + folderPath)
+            ApiResponse result = cloudinary.search()
+            .expression("folder:" + publicId).sortBy("filename", "asc")
             .execute();
             return result;
         }catch(Exception ex){
             throw new SomeRuntimeException("the sky is falling!", ex);
         }
     }
+
+    public ApiResponse getFiles(String comicName, String chapName) {
+        try{
+            // String publicId1 =  comicName+"/" + chapName;
+            String publicId = chapName.isEmpty() ? comicName.toLowerCase() : comicName.toLowerCase() + "/" + chapName.toLowerCase();
+            // Retrieve all files in the specified folder
+            ApiResponse result = cloudinary.search()
+            .expression("folder:" + publicId).sortBy("filename", "asc")
+            .execute();
+            return result;
+        }catch(Exception ex){
+            throw new SomeRuntimeException("the sky is falling!", ex);
+        }
+    }
+
+    // public String getFiles(String comicName, String chapName) {
+    //     try{
+    //         String publicId = chapName.isEmpty() ? comicName.toLowerCase() : comicName.toLowerCase() + "/" + chapName.toLowerCase() + "/spiderman-1-1";
+    //         Map<String, String> options = ObjectUtils.asMap("alt", "Beautiful landscape with mountains and lake");
+    //         String imageTag = cloudinary.url().imageTag(publicId + ".jpg", options);
+    //         return imageTag;
+    //     }catch(Exception ex){
+    //         throw new SomeRuntimeException("the sky is falling!", ex);
+    //     }
+    // }
 
     // public String getFile() {
     //     String comicName = "Spiderman";

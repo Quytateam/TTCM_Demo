@@ -8,9 +8,13 @@ public interface ImageService {
     
     // String uploadFile(MultipartFile multipartFile) throws IOException;
 
-    Map upload(MultipartFile file, String comicName, String chapName);
+    Map<String, Object> upload(MultipartFile file, String comicName, String chapName);
 
     Map<String, Object> getFile(String comicName, String chapName);
+
+    // String getFiles(String comicName, String chapName);
+
+    Map<String, Object> getFiles(String comicName, String chapName);
 
     // Map uploadPro(MultipartFile file, String comicName, String chapName);
 }

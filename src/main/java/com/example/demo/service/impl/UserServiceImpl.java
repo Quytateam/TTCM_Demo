@@ -1,10 +1,10 @@
 package com.example.demo.service.impl;
 
-import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -100,11 +100,21 @@ public class UserServiceImpl implements UserService {
       String resetPasswordUrl = "http://localhost:8080/api/auth/reset-password?token=" + token + "&id=" + user.getId();
       try{
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("mailtrap@demomailtrap.com");
-        message.setTo("6151071090@st.utc2.edu.vn");
-        message.setSubject("Reset Password Link");
-        message.setText("Click here to reset your password: " + resetPasswordUrl);
-        emailSender.send(message);
+        // message.setFrom("mailtrap@demomailtrap.com");
+        // message.setTo("6151071090@st.utc2.edu.vn");
+        // message.setSubject("Reset Password Link");
+        // message.setText("Click here to reset your password: " + resetPasswordUrl);
+        // emailSender.send(message);
+        MimeMessagePreparator preparator = mimeMessage -> {
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+            helper.setFrom("mailtrap@demomailtrap.com");
+            helper.setTo("6151071090@st.utc2.edu.vn");
+            helper.setSubject("Reset Password Link");
+            // Thiết lập nội dung của email với HTML và CSS từ file
+            String htmlContent = "<p style=\"color: blue;\">Click <a href=\"" + resetPasswordUrl + "\">here</a> to reset your password.</p>";
+            helper.setText(htmlContent, true);
+        };
+        emailSender.send(preparator);
         return "Link sent to your email!";
       }catch(Exception e){
         // tokenRepository.deleteByUserId(user.getId());
